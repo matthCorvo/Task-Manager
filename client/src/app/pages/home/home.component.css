@@ -2,7 +2,7 @@ h1{
     color: #04a88f;
 }
 
-button {
+button, .btn:hover {
     background-color: #04a88f;
 }
 
@@ -116,6 +116,11 @@ button {
     width: 50px;
     border-radius: 50%;
 }
+
+.fa-plus{
+    color: white;
+}
+
 .empty-state-text {
     font-size: 20px;
     color: #777;
