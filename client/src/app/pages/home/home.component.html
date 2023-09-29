@@ -16,12 +16,12 @@
 
     </div>
 
-    <!-- <button class="button is-primary has-text-white" routerLink="/new-list">+ New List</button> -->
     <button class="btn text-white" routerLink="/new-list" ><i class="fa-solid fa-plus"></i> Nouvelle liste</button>
 
     </div>
 
     <div class="task-list-container bg-light">
+      <div *ngIf="tache">
         <h1 class="title">
             Tâches
         </h1>
@@ -30,9 +30,16 @@
         <p>{{ tach.titre }}</p>
       </div>
 
+      <h3 class="empty-state-text mt-5" *ngIf="tache.length === 0"> Cliquez sur le bouton <i class="fa-solid fa-plus" style="color:black"></i> pour créer une nouvelle tâche.</h3>
+
       <button routerLink="./new-task" class="circle-add-button btn">
         <i class="fa-solid fa-plus fa-2xl"></i>
       </button>
+    </div>
+
+    <div *ngIf="!tache">
+      <h3 class="empty-state-text">Sélectionnez une liste dans la barre latérale</h3>
+    </div>
 
   </div>
 </div>

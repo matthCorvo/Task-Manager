@@ -6,6 +6,7 @@ use App\Entity\Tache;
 use App\Repository\ListeRepository;
 use App\Repository\TacheRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,8 +15,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/liste')]
+// #[IsGranted('IS_AUTHENTICATED_FULLY', message: 'Vous n\'avez pas les droits suffisants pour créer un livre')]
 class TacheController extends AbstractController
 {
     #[Route('/{listeId}/tache', name: 'TacheByListeId', methods: ['GET'])]
@@ -29,18 +32,24 @@ class TacheController extends AbstractController
     }
 
     #[Route('/{listeId}/tache/{id}', name: 'TacheById', methods: ['GET'])]
-    public function GetTacheById(int $listeId, Tache $tache,  SerializerInterface $serializer): JsonResponse
+    public function GetTacheById(Tache $tache,  SerializerInterface $serializer): JsonResponse
     {
         $jsonTache = $serializer->serialize($tache, 'json', ['groups' => 'getTache']);
         return new JsonResponse($jsonTache, Response::HTTP_OK, ['accept' => 'json'], true);
     }
 
     #[Route('/{listeId}/tache', name: 'createTache', methods: ['POST'])]
-    public function createTache(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator, ListeRepository $listeRepository, int $listeId): JsonResponse
+    public function createTache(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator, ListeRepository $listeRepository, int $listeId): JsonResponse
     {
         // Désérialize the task from the JSON request data
         $tache = $serializer->deserialize($request->getContent(), Tache::class, 'json');
+          // On vérifie les erreurs
+          $errors = $validator->validate($tache);
 
+          if ($errors->count() > 0) {
+              return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+          }
+          
         // Set the associated liste using the provided $listeId
         $liste = $listeRepository->find($listeId);
         if (!$liste) {

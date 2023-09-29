@@ -13,7 +13,7 @@ import { TacheService } from 'src/app/services/tache.service';
 })
 
 export class HomeComponent implements OnInit {
-  // liste: Liste[];
+
   liste: any;
   tache: any;
 
@@ -22,10 +22,14 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
    this.route.params.subscribe(
       (params: Params) => {
+        if (params['listeId']) {
           this.tacheService.GetTacheByListeId(params['listeId']).subscribe((tache: any) => {
             this.tache = tache;
           })
+        } else {
+          this.tache = undefined;
         }
+      }
     )
 
     this.tacheService.getAllListe().subscribe((liste: any) => {
