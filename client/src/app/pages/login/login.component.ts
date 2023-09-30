@@ -11,7 +11,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class LoginComponent implements OnInit {
   constructor( private authService: AuthService, private router: Router) { }
-  username: string = '';  
+  email: string = '';  
 password: string = '';
   ngOnInit() {
   }
@@ -19,7 +19,7 @@ password: string = '';
 
 
   onLoginButtonClick():void {
-      this.authService.login(this.username, this.password).subscribe((response) => {
+      this.authService.login(this.email, this.password).subscribe((response) => {
         if (response.status === 200) {
           // we have logged in successfully
           this.router.navigate(['/liste']);

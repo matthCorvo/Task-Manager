@@ -42,7 +42,7 @@ export class WebReqInterceptor implements HttpInterceptor {
         // append the access token to the request header
         return request.clone({
           setHeaders: {
-            'x-access-token': token
+            'token': token
           }
         })
       }

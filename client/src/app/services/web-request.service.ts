@@ -29,9 +29,9 @@ export class WebRequestService {
   }
 
   
-  login(username: string, password: string) {
-    return this.http.post(`${this.ROOT_URL}/login_check`, {
-      username,
+  login(email: string, password: string) {
+    return this.http.post(`${this.ROOT_URL}/login`, {
+      email,
       password
     }, {
         observe: 'response'

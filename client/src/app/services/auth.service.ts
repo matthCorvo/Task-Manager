@@ -33,14 +33,6 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  getAccessToken() {
-    return localStorage.getItem('x-access-token');
-  }
-
-  setAccessToken(accessToken: string) {
-    localStorage.setItem('x-access-token', accessToken)
-  }
-
   private setSession(userId: string, accessToken: string) {
   // private setSession(userId: string, accessToken: string, refreshToken: string) {
     localStorage.setItem('user-id', userId);
@@ -54,5 +46,11 @@ export class AuthService {
     // localStorage.removeItem('x-refresh-token');
   }
 
+  getAccessToken() {
+    return localStorage.getItem('x-access-token');
+  }
 
+  setAccessToken(accessToken: string) {
+    localStorage.setItem('x-access-token', accessToken)
+  }
 }
