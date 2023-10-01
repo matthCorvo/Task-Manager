@@ -5,7 +5,7 @@
 </div>
 
 <br>
-créer, visualiser, mettre à jour et supprimer des listes de tâches et des tâches individuelles. Le projet est divisé en deux parties : une API Symfony pour gérer les données et une interface utilisateur Angular pour interagir avec l'API.
+créer, visualiser, mettre à jour et supprimer des listes de tâches et des tâches individuelles. Le projet utilise une API Symfony pour gérer les données et Angular pour le front-end.
 
 ## Prérequis
 - Symfony (REST API)
