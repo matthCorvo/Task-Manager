@@ -9,14 +9,22 @@ import { Tache } from '../models/tache.models';
 export class TacheService {
 
   constructor(private webReqService: WebRequestService) { }
-
+  
+  
+  
   getAllListe() {
     return this.webReqService.get('liste');
   }
+  
+  
 
   createListe(titre: string) {
     // We want to send a web request to create a list
     return this.webReqService.post('liste', { titre });
+  }
+
+  GetListe(id: number) {
+    return this.webReqService.get(`liste/${id}`);
   }
 
   GetListeId(id: number) {
@@ -31,6 +39,11 @@ export class TacheService {
   updateTache(listeId: number, tacheId: number, titre: string) {
     // We want to send a web request to update a list
     return this.webReqService.patch(`liste/${listeId}/tache/${tacheId}`, { titre });
+  }
+
+  getTache(listeId: number, tacheId: number) {
+    // We want to send a web request to update a list
+    return this.webReqService.get(`liste/${listeId}/tache/${tacheId}`);
   }
 
   deleteTache(listeId: number, tacheId: number) {

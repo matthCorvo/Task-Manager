@@ -3,6 +3,7 @@ import { WebRequestService } from './web-request.service';
 import { Router } from '@angular/router';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { shareReplay, tap, map } from 'rxjs/operators';
+import jwtDecode from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -14,17 +15,34 @@ export class AuthService {
   login(username: string, password: string) {
     return this.webService.login(username, password).pipe(
       shareReplay(),
-      map((res: HttpResponse<any>) => {
-        // Extract the response data here
-        const data = res.body;
-        return data; // Return the extracted data
-      }),
-      tap(data => {
-        // Handle the extracted data
-        this.setSession(data.id, data['x-access-token'] || '{}');
-        console.log("LOGGED IN!");
+      tap((res: HttpResponse<any>) => {
+        console.log('Login Response:', res);
+        const accessToken = res.body?.token;
+        const refreshToken = res.body?.refreshToken;
+
+        if (accessToken) {
+          // Decode the JWT to get the user ID
+          this.setSession( accessToken, refreshToken);
+        } else {
+          console.error('Access Token is missing in the response body.');
+        }
+
+      console.log('LOGGED IN!');
       })
     );
+  }
+  
+  signup(email: string, password: string) {
+    return this.webService.signup(email, password).pipe(
+      shareReplay(),
+      tap((res: HttpResponse<any>) => {
+        console.log('Login Response:', res);
+        const accessToken = res.body?.token;
+        // the auth tokens will be in the header of this response
+        this.setAccessToken(accessToken);
+        console.log("Successfully signed up and now logged in!");
+      })
+    )
   }
 
   logout() {
@@ -33,24 +51,52 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  private setSession(userId: string, accessToken: string) {
-  // private setSession(userId: string, accessToken: string, refreshToken: string) {
-    localStorage.setItem('user-id', userId);
-    localStorage.setItem('x-access-token', accessToken);
-    // localStorage.setItem('x-refresh-token', refreshToken);
-  }
-  
-  private removeSession() {
-    localStorage.removeItem('user-id');
-    localStorage.removeItem('x-access-token');
-    // localStorage.removeItem('x-refresh-token');
-  }
-
   getAccessToken() {
     return localStorage.getItem('x-access-token');
   }
+  
+  getRefreshToken() {
+    return localStorage.getItem('x-refresh-token');
+  }
 
+  // getUserId() {
+  //   return localStorage.getItem('user-id');
+  // }
+
+  setRefreshToken(refreshToken: string) {
+    localStorage.setItem('x-refresh-token', refreshToken);
+  }
+
+  
   setAccessToken(accessToken: string) {
     localStorage.setItem('x-access-token', accessToken)
   }
+
+  private setSession( accessToken: string, refreshToken: string) {
+    localStorage.setItem('x-access-token', accessToken);
+    localStorage.setItem('x-refresh-token', refreshToken);
+  }
+  
+  private removeSession() {
+    localStorage.removeItem('x-access-token');
+    localStorage.removeItem('x-refresh-token');
+  }
+
+getNewAccessToken() {
+  const refreshToken = this.getRefreshToken() ?? '';
+  
+  return this.http.get(`${this.webService.ROOT_URL}/token`, {
+      headers: {
+      'x-refresh-token': refreshToken,
+      },
+      observe: 'response'
+     })
+    .pipe(
+      tap((res: HttpResponse<any>) => {
+        const accessToken = res.headers.get('x-access-token') ?? '';
+        this.setAccessToken(accessToken);
+      })
+   )
+  }
+
 }

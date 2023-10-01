@@ -6,6 +6,14 @@ button, .btn:hover {
     background-color: #04a88f;
 }
 
+.dropdown button,.dropdown  .btn:hover,.task-buttons button {
+    background-color: #ffffff;
+    border: 1px solid #ffffff;
+}
+.dropdown a{
+   cursor: grab;
+}
+
 .task-manager-container {
     display: flex;
     width: 100%;
@@ -70,10 +78,10 @@ button, .btn:hover {
 .task {
     display: flex;
     background: white;
-    padding: 15px 20px;
+    padding: 15px 20px 0px;
     border-radius: 5px;
     margin-top: 10px;
-    align-items: center;
+
 }
 
 .task:not(.complete) {
@@ -107,6 +115,7 @@ button, .btn:hover {
     transition: opacity 0.2s, transform 0.2s;
     opacity: 0;
     transform: scale(0.85);
+    
 }
 .circle-add-button {
     position: absolute;

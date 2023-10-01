@@ -19,7 +19,7 @@ class Tache
     #[ORM\Column(length: 255)]
     #[Groups(["getTache"])]
     #[Assert\NotBlank(message: "Le titre de la tache est obligatoire")]
-    #[Assert\Length(min: 5, max: 255, minMessage: "Le titre doit faire au moins {{ limit }} caractères", maxMessage: "Le titre ne peut pas faire plus de {{ limit }} caractères")]
+    // #[Assert\Length(min: 5, max: 255, minMessage: "Le titre doit faire au moins {{ limit }} caractères", maxMessage: "Le titre ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $titre = null;
 
     #[ORM\Column(nullable: true)]

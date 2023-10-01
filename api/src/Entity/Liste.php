@@ -21,14 +21,15 @@ class Liste
     #[ORM\Column(length: 255)]
     #[Groups(["getTache"])]
     #[Assert\NotBlank(message: "Le nom de la liste est obligatoire")]
-    #[Assert\Length(min: 5, max: 100, minMessage: "Le titre doit faire au moins {{ limit }} caractères", maxMessage: "Le titre ne peut pas faire plus de {{ limit }} caractères")]
+    // #[Assert\Length(min: 5, max: 100, minMessage: "Le titre doit faire au moins {{ limit }} caractères", maxMessage: "Le titre ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $titre = null;
 
     #[ORM\OneToMany(mappedBy: 'liste', targetEntity: Tache::class, cascade:['remove'])]
     private Collection $taches;
 
-    #[ORM\ManyToOne(inversedBy: 'Listes', cascade:['remove'])]
+    #[ORM\ManyToOne(inversedBy: 'Listes')]
     #[ORM\JoinColumn(name:"user_id", referencedColumnName:"id")]
+    #[Groups(["getTache"])]
     private ?User $user = null;
 
 

@@ -11,14 +11,14 @@ import { TacheService } from 'src/app/services/tache.service';
 export class NewListComponent implements OnInit {
 
   constructor(private tacheService: TacheService, private route: ActivatedRoute, private router: Router) { }
-  
+  liste: Liste[] = [];
  
   ngOnInit() {}
 
  
   createNewList(titre: string) {
-    this.tacheService.createListe(titre).subscribe(next => {
-      const liste: Liste = next as Liste;
+    this.tacheService.createListe(titre).subscribe((liste: any )=> {
+      console.log(liste);
       this.router.navigate([ '/liste', liste.id ]); 
     })  
   }

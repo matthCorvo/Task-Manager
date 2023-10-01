@@ -17,12 +17,15 @@ export class HomeComponent implements OnInit {
   liste: any;
   tache: any;
 
+  selectedListId: number = 0;
+
   constructor(private tacheService: TacheService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
    this.route.params.subscribe(
       (params: Params) => {
         if (params['listeId']) {
+          this.selectedListId = params['listeId'];
           this.tacheService.GetTacheByListeId(params['listeId']).subscribe((tache: any) => {
             this.tache = tache;
           })
@@ -46,4 +49,19 @@ export class HomeComponent implements OnInit {
     })
   }
 
+  onDeleteListClick() {
+    this.tacheService.deleteListe(this.selectedListId).subscribe((res: any) => {
+      this.router.navigate(['/home']);
+      console.log(res);
+    })
+  }
+
+  onDeleteTaskClick(tacheId: number) {
+    this.tacheService.deleteTache(this.selectedListId, tacheId).subscribe((res: any) => {
+      // Filter out the deleted task from the tache array
+      this.tache = this.tache.filter((val: Tache) => val.id !== tacheId);
+      console.log(res);
+    });
+  }
+  
 }

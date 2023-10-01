@@ -11,6 +11,10 @@ import { LoginComponent } from './pages/login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms'; 
 import { WebReqInterceptor } from './interceptor/web-req.interceptor';
+import { RegisterComponent } from './pages/register/register.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { EditListComponent } from './component/edit-list/edit-list.component';
+import { EditTacheComponent } from './component/edit-tache/edit-tache.component';
 
 @NgModule({
   declarations: [
@@ -18,14 +22,18 @@ import { WebReqInterceptor } from './interceptor/web-req.interceptor';
     HomeComponent,
     NewListComponent,
     NewTaskComponent,
-    LoginComponent
+    LoginComponent,
+    RegisterComponent,
+    EditListComponent,
+    EditTacheComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    NgbModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, 

@@ -25,7 +25,8 @@ ngOnInit() {
 
   createNewTask(titre: string) {
     this.tacheService.createTache(titre, this.listeId).subscribe(newTask => {
-      const liste: Tache = newTask as Tache;
+      const tache: Tache = newTask as Tache;
+      console.log(tache)
       this.router.navigate(['../'], { relativeTo: this.route });
     })
   }

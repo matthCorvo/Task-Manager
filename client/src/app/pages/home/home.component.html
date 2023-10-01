@@ -22,12 +22,38 @@
 
     <div class="task-list-container bg-light">
       <div *ngIf="tache">
-        <h1 class="title">
-            Tâches
-        </h1>
+        <div class="d-flex justify-content-between mb-3">
+          <h1 class="title">
+              Tâches
+          </h1>
+          <div class="dropdown" ngbDropdown #myDropdown="ngbDropdown" (mouseenter)="myDropdown.open()">
+            <button class="btn" id="dropdownMenuButton" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
+              <i class="fa-solid fa-gear"></i>
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownMenuButton">
+              <a [routerLink]="['/edit-list', selectedListId]" class="dropdown-item">
+                <p>Modifier</p>
+              </a>
+              <a (click)="onDeleteListClick()" class="dropdown-item text-danger">
+                <p>Supprimer</p>
+              </a>
+            
+            </div>
+          </div>
+          
+          
+        </div>
 
     <div class="task" *ngFor="let tach of tache" (click)="tacheClick(tach)" [ngClass]="{ 'complete': tach.status }">
-        <p>{{ tach.titre }}</p>
+      <div class="task-text">
+              <p>{{ tach.titre }}</p>
+      </div>  
+      <div class="task-buttons">
+        <button class="btn text-success" [routerLink]="['/liste', selectedListId, 'edit-task', tach.id]"><i class="fa-solid fa-pen-to-square"></i></button>
+      </div>
+      <div class="task-buttons">
+        <button class="btn text-danger"  (click)="onDeleteTaskClick(tach.id)"><i class="fa-solid fa-trash-can"></i></button>
+      </div>
       </div>
 
       <h3 class="empty-state-text mt-5" *ngIf="tache.length === 0"> Cliquez sur le bouton <i class="fa-solid fa-plus" style="color:black"></i> pour créer une nouvelle tâche.</h3>

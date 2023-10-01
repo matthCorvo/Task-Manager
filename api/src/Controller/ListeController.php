@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Liste;
+use App\Entity\User;
 use App\Repository\ListeRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,20 +24,16 @@ use Symfony\Bundle\SecurityBundle\Security;
 class ListeController extends AbstractController
 {
     #[Route('/liste', name: 'AllListe', methods: ['GET'])]
-    public function GetAllListe(Security $security, ListeRepository $listeRepository,  SerializerInterface $serializer): JsonResponse
+    public function GetAllListe( Security $security, ListeRepository $listeRepository,  SerializerInterface $serializer): JsonResponse
     {
-        // Get the authenticated user
+        // // Get the authenticated user
         $user = $security->getUser();
     
-        // Check if the user is authenticated
-        if (!$user) {
-            return new JsonResponse(['message' => 'User not authenticated'], JsonResponse::HTTP_UNAUTHORIZED);
-        }
-    
+
         // Retrieve lists associated with the authenticated user
         $liste = $listeRepository->findBy(['user' => $user]);
         $jsonListe = $serializer->serialize($liste, 'json', ['groups' => 'getTache']);
-        return new JsonResponse($jsonListe, Response::HTTP_OK, [], true);
+        return new JsonResponse($jsonListe, Response::HTTP_OK, ['accept' => 'json'], true);
     }
 
     #[Route('/liste/{id}', name: 'ListeById', methods: ['GET'])]
@@ -48,20 +45,20 @@ class ListeController extends AbstractController
     }
 
     #[Route('/liste', name:"createListe", methods: ['POST'])]
-    public function createListe( UserRepository $userRepository, ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator): JsonResponse 
+    public function createListe( Security $security, ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator): JsonResponse 
     {
+        $user = $security->getUser();
 
-        $liste = $serializer->deserialize($request->getContent(), Liste::class, 'json');
-        $content = $request->toArray();
-        // Get the authenticated user's ID
-        $userId = $content['userId'] ?? -1;
-
-        // On cherche l'auteur qui correspond et on l'assigne au livre.
-        // Si "find" ne trouve pas l'auteur, alors null sera retourné.
-        $liste->setUser($userRepository->find($userId));
-        if (!$userId) {
-            return new JsonResponse(['message' => 'User not found'], JsonResponse::HTTP_NOT_FOUND);
+        if (!$user) {
+            return new JsonResponse(['message' => 'User not authenticated'], JsonResponse::HTTP_UNAUTHORIZED);
         }
+    
+        // Create a new Liste instance
+        $liste = $serializer->deserialize($request->getContent(), Liste::class, 'json');
+    
+        // Assign the authenticated user to the Liste
+        $liste->setUser($user);
+    
 
         // On vérifie les erreurs
         $errors = $validator->validate($liste);

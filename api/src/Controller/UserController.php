@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\SecurityBundle\Security;
 
 #[Route('/api')]
@@ -67,6 +69,7 @@ class UserController extends AbstractController
     public function login(        
         JWTTokenManagerInterface $JWTManager,    
         Request $request, 
+        RefreshTokenManagerInterface $refreshTokenManager,
         UserRepository $userRepository,
         UserPasswordHasherInterface $userPasswordHasher
     ) {
@@ -112,4 +115,35 @@ class UserController extends AbstractController
 
         return new JsonResponse(['token' => $JWTManager->create($user)]);
     }
+
+    #[Route('/users', name: 'list_users', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un livre')]
+    public function listUsers(EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Get the UserRepository
+        $userRepository = $entityManager->getRepository(User::class);
+
+        // Retrieve all users from the database
+        $users = $userRepository->findAll();
+
+        // Serialize the list of users to JSON
+        $data = [];
+        foreach ($users as $user) {
+            $data[] = [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'roles' => $user->getRoles(),
+            ];
+        }
+
+        // Return the JSON response with the list of users
+        return new JsonResponse(['users' => $data]);
+    }
+
+
+    // #[Route('/api/token/refresh', name: 'token_refresh', methods: ['GET'])]
+    // public function refreshTokenAction()
+    // {
+    //     // Your controller logic here
+    // }
 }

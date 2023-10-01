@@ -1,7 +1,7 @@
 <div class="centered-content">
     <div class="white-box">
   
-      <h1 class="title mb-3">Connexion</h1>
+      <h1 class="title mb-3">inscription</h1>
       
       <form>
 
@@ -10,7 +10,7 @@
             <span class="input-group-text">
               <i class="fas fa-envelope"></i>
             </span>
-            <input  class="form-control" type="email"  name="username" [(ngModel)]="username" placeholder="username">
+            <input  class="form-control" type="email"  name="email" [(ngModel)]="email" placeholder="email">
           </div>
         </div>
         <div class="mb-3">
@@ -22,15 +22,12 @@
           </div>
         </div>
         <div class="d-flex justify-content-end">
-          <button class=" btn text-white" (click)="onLoginButtonClick()">Connexion</button>
+          <button class=" btn text-white" (click)="onSignupButtonClicked(email, password)">Connexion</button>
         </div>
       </form>
       <br>
   
-      <p class="has-text-grey">Vous n'avez pas de compte ? <a routerLink="/register">S'inscrire</a> 
-      <br>ou<br>
-      - email : <strong>demo@demo.com</strong> <br>- mot de passe : <strong>password</strong>
-      </p>
+      <p class="has-text-grey">Vous avez déjà un compte ? <br> <a routerLink="/login">Se connecter</a> 
   
     </div>
   </div>
