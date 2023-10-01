@@ -21,16 +21,31 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[IsGranted('IS_AUTHENTICATED_FULLY', message: 'Vous n\'avez pas les droits suffisants pour créer un livre')]
 class TacheController extends AbstractController
 {
+    /**
+     * Obtient toutes les tâches appartenant à une liste spécifique.
+     *
+     * @param int $listeId
+     * @param TacheRepository $tacheRepository
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
+     */
     #[Route('/{listeId}/tache', name: 'TacheByListeId', methods: ['GET'])]
     public function GetTacheByListeId(int $listeId,TacheRepository $tacheRepository,  SerializerInterface $serializer): JsonResponse
     {
-        // Récupérez toutes les tâches appartenant à une liste spécifique (listId)
+        // Récupère toutes les tâches appartenant à une liste spécifique (listeId)
         $tache = $tacheRepository->findBy(['liste' => $listeId]);    
-        // Sérialisez les tâches en JSON
+        // Sérialise les tâches en JSON
         $jsonListe = $serializer->serialize($tache, 'json', ['groups' => 'getTache']);
         return new JsonResponse($jsonListe, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Obtient une tâche par son ID.
+     *
+     * @param Tache $tache
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
+     */
     #[Route('/{listeId}/tache/{id}', name: 'TacheById', methods: ['GET'])]
     public function GetTacheById(Tache $tache,  SerializerInterface $serializer): JsonResponse
     {
@@ -38,41 +53,59 @@ class TacheController extends AbstractController
         return new JsonResponse($jsonTache, Response::HTTP_OK, ['accept' => 'json'], true);
     }
 
+     /**
+     * Crée une nouvelle tâche associée à une liste spécifique.
+     *
+     * @param ValidatorInterface $validator
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param EntityManagerInterface $em
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param ListeRepository $listeRepository
+     * @param int $listeId
+     * @return JsonResponse
+     */
     #[Route('/{listeId}/tache', name: 'createTache', methods: ['POST'])]
     public function createTache(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator, ListeRepository $listeRepository, int $listeId): JsonResponse
     {
-        // Désérialize the task from the JSON request data
+        // Désérialise la tâche à partir des données JSON de la requête
         $tache = $serializer->deserialize($request->getContent(), Tache::class, 'json');
-          // On vérifie les erreurs
-          $errors = $validator->validate($tache);
+        // Vérifie les erreurs de validation
+        $errors = $validator->validate($tache);
 
           if ($errors->count() > 0) {
               return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
           }
           
-        // Set the associated liste using the provided $listeId
+        // Récupère la liste associée en utilisant $listeId fourni
         $liste = $listeRepository->find($listeId);
         if (!$liste) {
-            // Handle the case where the liste with the given ID doesn't exist
+            // Gère le cas où la liste avec l'ID donné n'existe pas
             return new JsonResponse(['error' => 'Liste non trouvée'], Response::HTTP_NOT_FOUND);
         }
         
         $tache->setListe($liste);
 
-        // Persist the new task
         $em->persist($tache);
         $em->flush();
 
-        // Serialize the created task to JSON
+        // Sérialise la tâche créée en JSON
         $jsonTache = $serializer->serialize($tache, 'json', ['groups' => 'getTache']);
 
-        // Generate the location of the created task
         $location = $urlGenerator->generate('TacheById', ['listeId' => $listeId, 'id' => $tache->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        // Return a JSON response with the location of the created task
         return new JsonResponse($jsonTache, Response::HTTP_CREATED, ["Location" => $location], true);
     }
 
+    /**
+     * Met à jour une tâche existante.
+     *
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param Tache $currentTache
+     * @param EntityManagerInterface $em
+     * @return JsonResponse
+     */
     #[Route('/{listeId}/tache/{id}', name: 'updateTache', methods: ['PATCH'])]
     public function updateTache(Request $request, SerializerInterface $serializer, Tache $currentTache, EntityManagerInterface $em): JsonResponse 
     {
@@ -86,6 +119,13 @@ class TacheController extends AbstractController
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
     
+     /**
+     * Supprime une tâche.
+     *
+     * @param Tache $tache
+     * @param EntityManagerInterface $em
+     * @return JsonResponse
+     */
     #[Route('/{listeId}/tache/{id}', name: 'deleteTache', methods: ['DELETE'])]
     public function deleteTache(Tache $tache, EntityManagerInterface $em): JsonResponse 
     {

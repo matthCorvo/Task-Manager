@@ -34,7 +34,7 @@ class AppFixtures extends Fixture
             $userAdmin->setPassword($this->userPasswordHasher->hashPassword($userAdmin, "password"));
             $manager->persist($userAdmin);
 
-        // Création d'une vingtaine de listes ayant pour titre
+        // Création d listes 
         for ($i = 0; $i < 10; $i++) {
             $liste = new Liste;
             $liste->setTitre('Test Liste ' . $i);

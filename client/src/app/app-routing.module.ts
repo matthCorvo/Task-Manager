@@ -15,7 +15,6 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'edit-list/:listeId', component: EditListComponent },
   { path: 'liste/:listeId/edit-task/:tacheId', component: EditTacheComponent },
-
   { path: 'home', component: HomeComponent },
   { path: 'liste/:listeId', component: HomeComponent },
   { path: 'liste/:listeId/new-task', component: NewTaskComponent },

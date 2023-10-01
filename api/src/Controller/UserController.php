@@ -21,6 +21,17 @@ use Symfony\Bundle\SecurityBundle\Security;
 #[Route('/api')]
 class UserController extends AbstractController
 {
+    /**
+     * Inscription d'un nouvel utilisateur.
+     *
+     * @param UserRepository $userRepository
+     * @param SerializerInterface $serializer
+     * @param EntityManagerInterface $em
+     * @param Request $request
+     * @param UserPasswordHasherInterface $userPasswordHasher
+     * @param JWTTokenManagerInterface $JWTManager
+     * @return JsonResponse
+     */
     #[Route('/signup', name: 'signup', methods: ['POST'])]
     public function signup(
         UserRepository $userRepository,
@@ -30,41 +41,51 @@ class UserController extends AbstractController
         UserPasswordHasherInterface $userPasswordHasher,
         JWTTokenManagerInterface $JWTManager
     ): JsonResponse {
-        // Deserialize the JSON request into a User object
+        // Désérialise la requête JSON en un objet User
         $user = $serializer->deserialize($request->getContent(), User::class, 'json');
 
-        // Get email and password from the User object
+        // Récupère l'email et le mot de passe de l'objet User
         $email = $user->getEmail();
         $password = $user->getPassword();
-        // Check if email or password is empty
+        // Vérifie si l'email ou le mot de passe est vide
         if (empty($email) || empty($password)) {
-            return new JsonResponse(['message' => 'Email and password are required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['message' => 'Email et mot de passe sont nécessaires'], Response::HTTP_BAD_REQUEST);
         }
 
-         // Check if the user with the provided email already exists
-                $existingUser = $userRepository->findOneByEmail($email);
+        // Vérifie si l'utilisateur avec l'email fourni existe déjà
+        $existingUser = $userRepository->findOneByEmail($email);
 
-                if ($existingUser) {
-                    return new JsonResponse(['message' => 'Email already exists'], Response::HTTP_BAD_REQUEST);
-                }
+        if ($existingUser) {
+            return new JsonResponse(['message' => 'Email existe déja'], Response::HTTP_BAD_REQUEST);
+        }
         
-        // Create a new User entity
+        // Crée une nouvelle entité User
         $user = new User();
         $user->setEmail($email);
         $user->setRoles(["ROLE_USER"]);
         $user->setPassword($userPasswordHasher->hashPassword($user, $password));
  
        
-        // Persist and flush the User entity to the database
+        // Persiste et enregistre l'entité User dans la base de données
         $em->persist($user);
         $em->flush();
 
-        // Generate a JWT token for the new user
+        // Génère un jeton JWT pour le nouvel utilisateur
         $token = $JWTManager->create($user);
 
         return new JsonResponse(['token' => $token], Response::HTTP_CREATED);
     }
 
+    /**
+     * Connexion de l'utilisateur.
+     *
+     * @param JWTTokenManagerInterface $JWTManager
+     * @param Request $request
+     * @param RefreshTokenManagerInterface $refreshTokenManager
+     * @param UserRepository $userRepository
+     * @param UserPasswordHasherInterface $userPasswordHasher
+     * @return JsonResponse
+     */
     #[Route('/login', name: 'login', methods: ['POST'])]
     public function login(        
         JWTTokenManagerInterface $JWTManager,    
@@ -73,38 +94,40 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         UserPasswordHasherInterface $userPasswordHasher
     ) {
-        // Get the user's credentials from the request (e.g., email and password)
+        // Obtient les identifiants de l'utilisateur depuis la requête (par exemple, email et mot de passe)
         $credentials = json_decode($request->getContent(), true);
         $email = $credentials['email'] ?? null;
         $password = $credentials['password'] ?? null;
 
-        // Check if email or password is missing
+        // Vérifie si l'email ou le mot de passe est manquant
         if (empty($email) || empty($password)) {
-            return new JsonResponse(['message' => 'Email and password are required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['message' => 'Email et mot de passe sont nécessaires'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Find the user by email
+        // Trouve l'utilisateur par email
         $user = $userRepository->findOneByEmail($email);
 
-        // Check if a user with the provided email exists
+        // Vérifie si un utilisateur avec l'email fourni existe
         if (!$user) {
             return new JsonResponse(['message' => 'User not found'], Response::HTTP_UNAUTHORIZED);
         }
 
-        // Check if the provided password is correct
+        // Vérifie si le mot de passe fourni est correct
         if (!$userPasswordHasher->isPasswordValid($user, $password)) {
             return new JsonResponse(['message' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
         }
 
-        // Generate a JWT token for the authenticated user
+        // Génère un jeton JWT pour l'utilisateur authentifié
         $token = $JWTManager->create($user);
 
         return new JsonResponse(['token' => $token], Response::HTTP_CREATED);
     }
 
 
-    /**
-     * @param User $user
+     /**
+     * Obtient un jeton JWT pour l'utilisateur actuellement authentifié.
+     *
+     * @param Security $security
      * @param JWTTokenManagerInterface $JWTManager
      * @return JsonResponse
      */
@@ -116,17 +139,20 @@ class UserController extends AbstractController
         return new JsonResponse(['token' => $JWTManager->create($user)]);
     }
 
+    /**
+     * Liste tous les utilisateurs (réservé aux administrateurs).
+     *
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
+     */
     #[Route('/users', name: 'list_users', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un livre')]
     public function listUsers(EntityManagerInterface $entityManager): JsonResponse
     {
-        // Get the UserRepository
         $userRepository = $entityManager->getRepository(User::class);
 
-        // Retrieve all users from the database
         $users = $userRepository->findAll();
 
-        // Serialize the list of users to JSON
         $data = [];
         foreach ($users as $user) {
             $data[] = [
@@ -136,14 +162,8 @@ class UserController extends AbstractController
             ];
         }
 
-        // Return the JSON response with the list of users
         return new JsonResponse(['users' => $data]);
     }
 
 
-    // #[Route('/api/token/refresh', name: 'token_refresh', methods: ['GET'])]
-    // public function refreshTokenAction()
-    // {
-    //     // Your controller logic here
-    // }
 }

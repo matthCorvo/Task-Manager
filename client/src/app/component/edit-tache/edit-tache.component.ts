@@ -20,30 +20,25 @@ export class EditTacheComponent implements OnInit {
         this.tacheId = params['tacheId'];
         console.log(params['listeId']);
         console.log(params['tacheId']);
-   // Fetch the original list data (e.g., using a service)
-   this.fetchOriginalListData(this.listeId, this.tacheId );
+        // Récupérez les données d'origine de la liste 
+        this.fetchOriginalListData(this.listeId, this.tacheId );
   }
 );
 }
 
-// Fetch the original list data and set the listTitle property
 fetchOriginalListData(listeId: number, tacheId: number) {
-// Replace this with your service call to fetch the original list data
-// For example, assuming you have a service method called getListById(listeId)
 this.tacheService.getTache(listeId,tacheId ).subscribe(
   (tacheData: any) => {
-    // Assuming your original list data has a property 'title'
     this.tacheTitre = tacheData.titre;
   },
   (error: any) => {
-    console.error('Error fetching original list data:', error);
+    console.error('Erreur lors de la récupération des données', error);
   }
 );
 }
  
 updateTask() {
     const titre = this.tacheTitre;
-
     this.tacheService.updateTache(this.listeId, this.tacheId, titre).subscribe(( )=> {
       this.router.navigate([ '/liste', this.listeId]); 
     })  

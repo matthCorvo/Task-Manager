@@ -11,15 +11,11 @@ export class TacheService {
   constructor(private webReqService: WebRequestService) { }
   
   
-  
   getAllListe() {
     return this.webReqService.get('liste');
   }
   
-  
-
   createListe(titre: string) {
-    // We want to send a web request to create a list
     return this.webReqService.post('liste', { titre });
   }
 
@@ -32,17 +28,14 @@ export class TacheService {
   }
 
   updateListe(id: number, titre: string) {
-    // We want to send a web request to update a list
     return this.webReqService.patch(`liste/${id}`, { titre });
   }
 
   updateTache(listeId: number, tacheId: number, titre: string) {
-    // We want to send a web request to update a list
     return this.webReqService.patch(`liste/${listeId}/tache/${tacheId}`, { titre });
   }
 
   getTache(listeId: number, tacheId: number) {
-    // We want to send a web request to update a list
     return this.webReqService.get(`liste/${listeId}/tache/${tacheId}`);
   }
 
@@ -59,7 +52,6 @@ export class TacheService {
   }
 
   createTache(titre: string, listeId: number) {
-    // We want to send a web request to create a task
     return this.webReqService.post(`liste/${listeId}/tache`, { titre });
   }
 

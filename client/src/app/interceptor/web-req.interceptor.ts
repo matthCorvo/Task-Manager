@@ -12,31 +12,29 @@ export class WebReqInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService) { }
 
   refreshingAccessToken: boolean = false;
-
+  //  utilisé pour signaler que le jeton d'accès a été rafraîchi
   private accessTokenRefreshed: Subject<any> = new Subject();
 
-
+  // Intercepte les requêtes HTTP sortantes
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
-    // Handle the request
+    // Ajoute le jeton d'authentification aux en-têtes de la requête
     request = this.addAuthHeader(request);
-
-    // call next() and handle the response
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         console.log(error);
 
         if (error.status == 401) {
-          // 401 error so we are unauthorized
-
-          // refresh the access token
+        // En cas d'erreur 401 (non autorisé), tente de rafraîchir le jeton d'accès
            return this.refreshAccessToken()
             .pipe(
               switchMap(() => {
+                // Après le rafraîchissement du jeton, réessaie la requête
                 request = this.addAuthHeader(request);
                 return next.handle(request);
               }),
               catchError((err: any) => {
             console.log(err)
+              // En cas d'échec du rafraîchissement du jeton, déconnecte l'utilisateur
                 this.authService.logout();
                 return empty();
               })
@@ -48,22 +46,23 @@ export class WebReqInterceptor implements HttpInterceptor {
     )
   }
 
+  // Rafraîchit le jeton d'accès
   refreshAccessToken() {
     if (this.refreshingAccessToken) {
       return new Observable(observer => {
         this.accessTokenRefreshed.subscribe(() => {
-          // this code will run when the access token has been refreshed
+          // Ce code s'exécutera lorsque le jeton d'accès aura été rafraîchi
           observer.next();
           observer.complete();
         })
       })
     } else {
       this.refreshingAccessToken = true;
-  //     // we want to call a method in the auth service to send a request to refresh the access token
       return this.authService.getNewAccessToken().pipe(
         tap(() => {
           console.log("Access Token Refreshed!");
           this.refreshingAccessToken = false;
+          // Signale que le jeton d'accès a été rafraîchi
           this.accessTokenRefreshed.next(true);
         })
       )
@@ -71,12 +70,12 @@ export class WebReqInterceptor implements HttpInterceptor {
     
   }
 
-
+  // Ajoute le jeton d'authentification aux en-têtes de la requête
   addAuthHeader(request: HttpRequest<any>) {
-    // get the access token
+    // Obtient le jeton d'accès
     const token = this.authService.getAccessToken();
     if (token) {
-      // append the access token to the request header
+      // Ajoute le jeton d'accès aux en-têtes de la requête
       return request.clone({
         setHeaders: {
           'Authorization': `Bearer ${token}`
