@@ -1,31 +1,27 @@
-# Gestionnaire de tâches avec Angular + Symfony API + MySQL
+# Client
 
-<div id="" align="center">
-  <img src="screenshot.png" width="100%"/>
-</div>
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.3.
 
-<br>
-créer, visualiser, mettre à jour et supprimer des listes de tâches et des tâches individuelles, protégées par l'authentification utilisateur. Le projet utilise une API Symfony pour gérer les données et Angular pour le front-end.
+## Development server
 
-## Prérequis
-- Symfony (REST API)
-- Angular 
-- MySQL (Base de données)
-- bootstrap 
-- jwt token & refresh
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-# Installation
-# API Symfony (Backend)
+## Code scaffolding
 
-Clonez le référentiel depuis GitHub :``` git clone https://github.com/matthCorvo/Task-Manager.git```
-Accédez au répertoire de l'interface utilisateur Symfony : cd api
-Installez les dépendances Symfony en utilisant Composer : ```composer install```
-Configurez votre base de données MySQL dans le fichier .env de Symfony.
-Créez la base de données en utilisant Doctrine : ```php bin/console doctrine:database:create```
-Effectuez les migrations pour créer les tables : ```php bin/console doctrine:migrations:migrate```
-Lancez l'api : ```symfony server start```
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-# Interface Utilisateur Angular (Frontend)
-Accédez au répertoire de l'interface utilisateur Angular : cd client
-Installez les dépendances Angular : ``` npm install```
-Lancez l'interface utilisateur Angular : ``` ng serve```
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Running unit tests
+
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
