@@ -9,7 +9,7 @@ export class WebRequestService {
   readonly ROOT_URL;
 
   constructor(private http: HttpClient) {
-    this.ROOT_URL = 'http://127.0.0.1:8000/api';
+    this.ROOT_URL = 'https://task.alwaysdata.net/api';
   }
 
   get(uri: string) {
