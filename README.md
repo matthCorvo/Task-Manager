@@ -27,6 +27,6 @@ Effectuez les migrations pour créer les tables : ```php bin/console doctrine:mi
 Lancez l'api : ```symfony server:start```
 
 # Interface Utilisateur Angular (Frontend)
-Accédez au répertoire de l'interface utilisateur Angular : cd client
+Accédez au répertoire de l'interface utilisateur Angular :  ```cd client ```
 Installez les dépendances Angular : ``` npm install```
 Lancez l'interface utilisateur Angular : ``` ng serve```
