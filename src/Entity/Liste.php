@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ListeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -39,6 +40,8 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      exclusion = @Hateoas\Exclusion(groups="getTache", excludeIf = "expr(not is_granted('ROLE_ADMIN'))"),
  * )
  */
+
+#[ApiResource()]
 #[ORM\Entity(repositoryClass: ListeRepository::class)]
 class Liste
 {
