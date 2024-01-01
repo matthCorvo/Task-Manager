@@ -32,4 +32,4 @@ Lancez l'api : ```http://localhost/apip```
 # Interface Utilisateur Angular (Frontend)
 Accédez au répertoire de l'interface utilisateur Angular :  ```cd client ```
 Installez les dépendances Angular : ``` npm install```
-Lancez l'interface utilisateur Angular : ``` ng serve```
+Lancez l'interface utilisateur Angular : ``` npm start```
