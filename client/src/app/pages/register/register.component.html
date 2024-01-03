@@ -1,0 +1,33 @@
+<div class="centered-content">
+    <div class="white-box">
+  
+      <h1 class="title mb-3">inscription</h1>
+      
+      <form>
+
+        <div class="mb-3">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fas fa-envelope"></i>
+            </span>
+            <input  class="form-control" type="email"  name="email" [(ngModel)]="email" placeholder="email">
+          </div>
+        </div>
+        <div class="mb-3">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fas fa-lock"></i>
+            </span>
+            <input   name="password" type="password" class="form-control" [(ngModel)]="password" placeholder="Mot de passe">
+          </div>
+        </div>
+        <div class="d-flex justify-content-end">
+          <button class=" btn text-white" (click)="onSignupButtonClicked(email, password)">Connexion</button>
+        </div>
+      </form>
+      <br>
+  
+      <p class="has-text-grey">Vous avez déjà un compte ? <br> <a routerLink="/login">Se connecter</a> 
+  
+    </div>
+  </div>
